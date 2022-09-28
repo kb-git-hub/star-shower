@@ -3,11 +3,15 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/js/index.js',
   mode: 'development',
   devServer: {
     watchFiles: ["src/*.html"],
     hot: true,
+  },
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'main.js',
   },
   module: {
     rules: [
@@ -18,10 +22,7 @@ module.exports = {
     ],
   },
 
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'main.js',
-  },
+  
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
