@@ -5,8 +5,9 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 module.exports = {
   entry: './src/index.js',
   mode: 'development',
-  devServer:{
-    open: true
+  devServer: {
+    watchFiles: ["src/*.html"],
+    hot: true,
   },
   module: {
     rules: [
@@ -16,7 +17,7 @@ module.exports = {
       },
     ],
   },
-  
+
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'main.js',
