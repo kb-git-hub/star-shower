@@ -14,4 +14,4 @@ function randomIntFromRange(min, max) {
     return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2))
   }
   
-  export default { randomIntFromRange, randomColor, distance }
+  export { randomIntFromRange, randomColor, distance }
