@@ -4,7 +4,7 @@ import { randomIntFromRange, randomColor, distance, randomColorAlpha } from './u
 
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
-
+const mtnColors = ['#1ae8ff', '#6eeb83', '#e4ff1a', '#ffae00']
 canvas.width = innerWidth
 canvas.height = innerHeight
 
@@ -24,7 +24,7 @@ Objects
 */
 
 class Star {
-    constructor(x, y, radius, color = {r:255, g:255, b:255}) {
+    constructor(x, y, radius, color = { r: 255, g: 255, b: 255 }) {
         this.x = x
         this.y = y
         this.radius = radius
@@ -43,7 +43,7 @@ class Star {
         }
         this.hit = 0
     }
-    draw =()=> {
+    draw = () => {
         c.beginPath()
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
         c.fillStyle = `rgba(${this.color.r},${this.color.g}, ${this.color.b})`
@@ -56,9 +56,7 @@ class Star {
         if (this.y + this.radius + this.velocity.y > canvas.height) {
             this.velocity.y = -this.velocity.y * this.physics.friction
             this.radius -= 1
-            if (this.radius > 3) {
-                this.starExplode()
-            }
+            if (this.radius > 2) this.starExplode()
         }
         else this.velocity.y += this.physics.gravity
         this.y += this.velocity.y
@@ -66,7 +64,7 @@ class Star {
 
     starExplode = () => {
         for (let i = 0; i < 8; i++) {
-            sparks.push(new Spark(this.x, this.y, randomIntFromRange(3, 4), this.color))
+            sparks.push(new Spark(this.x, this.y, this.radius - 1, this.color))
         }
     }
 }
@@ -92,14 +90,13 @@ class Spark extends Star {
         }
     }
 
-    draw = ()=> {
+    draw = () => {
         c.beginPath()
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
         c.fillStyle = `rgba(${this.color.r},${this.color.g}, ${this.color.b}, ${this.opacity})`
         c.fill()
         c.closePath()
     }
-
 
 
     update = () => {
@@ -110,7 +107,7 @@ class Spark extends Star {
 
         this.y += this.velocity.y
         this.x += this.velocity.x
-        this.timeLeft-=1.3
+        this.timeLeft -= 1.3
         this.opacity -= 1 / this.timeLeft
     }
 }
@@ -119,6 +116,35 @@ class Spark extends Star {
 Implementation
 */
 
+function createMountainRange(mtnAmount, height, color) {
+    for (let i = 0; i < mtnAmount; i++) {
+        const mtnWidth = canvas.width / mtnAmount
+        c.beginPath()
+        c.moveTo(i * mtnWidth, canvas.height)
+        c.lineTo(i * mtnWidth + mtnWidth + 325, canvas.height)
+        c.lineTo(i * mtnWidth + mtnWidth / 2, canvas.height - height)
+        c.lineTo(i * mtnWidth - 325, canvas.height)
+        c.fillStyle = color
+        c.fill()
+        c.closePath()
+
+    }
+
+
+}
+
+
+
+//background
+const backgroundGradient = c.createLinearGradient(0, 0, 0, canvas.height)
+console.log('🌌 | file: index.js | line 126 | backgroundGradient', backgroundGradient)
+backgroundGradient.addColorStop(0, '#263238')
+backgroundGradient.addColorStop(1, '#455a64')
+
+// mountains
+
+
+
 let stars
 let sparks
 
@@ -126,14 +152,18 @@ function init() {
     stars = []
     sparks = []
     for (let i = 0; i < 4; i++) {
-        stars.push(new Star(canvas.width * Math.random(), 10, randomIntFromRange(8, 10), randomColorAlpha()))
+        stars.push(new Star(canvas.width * Math.random(), -400, randomIntFromRange(5, 8), randomColorAlpha()))
     }
 }
 
 
 function animate() {
     requestAnimationFrame(animate)
-    c.clearRect(0, 0, canvas.width, canvas.height)
+    c.fillStyle = backgroundGradient
+    c.fillRect(0, 0, canvas.width, canvas.height)
+    createMountainRange(1, canvas.height * .9, '#384551')
+    createMountainRange(2, canvas.height - 100, '#2B3843')
+    createMountainRange(3, canvas.height - 300, '#26333B')
     stars.forEach((star, index) => {
         star.update()
         if (star.radius < 1) {
@@ -147,6 +177,8 @@ function animate() {
         }
     })
 }
+
+
 
 init()
 animate()

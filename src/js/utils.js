@@ -16,7 +16,8 @@ function distance(x1, y1, x2, y2) {
 
 
 function randomColorAlpha() {
-  const colors = [[235, 64, 52], [66, 135, 245], [255, 174, 0], [50, 168, 82]]
+  // const colors = [[235, 64, 52], [66, 135, 245], [255, 174, 0], [50, 168, 82]]
+  const colors = [[235, 255, 252], [210, 250, 245], [255, 251, 248], [250, 253, 250]]
   let selectedColor = randomColor(colors)
   let r = selectedColor[0]
   let b = selectedColor[1]
