@@ -34,7 +34,7 @@ class Star {
             b: color.b
         }
         this.velocity = {
-            x: 0,
+            x: randomIntFromRange(-20,20),
             y: 3
         }
         this.physics = {
@@ -42,6 +42,7 @@ class Star {
             friction: 0.70,
         }
         this.hit = 0
+        this.groundHeight = groundHeight
     }
     draw = () => {
         c.save()
@@ -57,13 +58,19 @@ class Star {
 
     update = () => {
         this.draw()
-        if (this.y + this.radius + this.velocity.y > canvas.height) {
+        if (this.y + this.radius + this.velocity.y > canvas.height - this.groundHeight) {
             this.velocity.y = -this.velocity.y * this.physics.friction
             this.radius -= 1
             if (this.radius > 2) this.starExplode()
         }
         else this.velocity.y += this.physics.gravity
         this.y += this.velocity.y
+        this.x += this.velocity.x
+
+        if (this.x + this.radius + this.velocity.x < 0 || this.x  + this.radius + this.velocity.x > canvas.width){
+            if (this.radius > 2) this.starExplode()
+            this.velocity.x = -this.velocity.x * (this.physics.friction / 3)
+        }
     }
 
     starExplode = () => {
@@ -109,7 +116,7 @@ class Spark extends Star {
 
     update = () => {
         this.draw()
-        if (this.y + this.radius + this.velocity.y > canvas.height) {
+        if (this.y + this.radius + this.velocity.y > canvas.height - this.groundHeight) {
             this.velocity.y = -this.velocity.y * this.physics.friction * this.physics.bounce
         } else this.velocity.y += this.physics.gravity
 
@@ -124,13 +131,7 @@ class Spark extends Star {
 Implementation
 */
 
-// function CreateStarBackground (){
-//     for (let i = 0; i < 30; i++) {
-//         starryNight.push(new Star(canvas.width * Math.random(), canvas.height * Math.random(), randomIntFromRange(2, 3), randomColorAlpha()))
-//     }
 
-
-// }
 
 function createMountainRange(mtnAmount, height, color) {
     for (let i = 0; i < mtnAmount; i++) {
@@ -157,19 +158,18 @@ backgroundGradient.addColorStop(1, '#455a64')
 // mountains
 
 
-
+let groundHeight = 175
 let stars
 let sparks
 let starryNight
+let timer = 0
 
 function init() {
     stars = []
     sparks = []
     starryNight = []
-    for (let i = 0; i < 4; i++) {
-        stars.push(new Star(canvas.width * Math.random(), -400, randomIntFromRange(5, 8), randomColorAlpha()))
-    }
-    for (let i = 0; i < 30; i++) {
+  
+    for (let i = 0; i < 40; i++) {
         const x = canvas.width * Math.random()
         const y = canvas.height * Math.random()
         starryNight.push(new Star(x, y, randomIntFromRange(1, 6), randomColorAlpha()))
@@ -182,9 +182,14 @@ function animate() {
     c.fillStyle = backgroundGradient
     c.fillRect(0, 0, canvas.width, canvas.height)
     starryNight.forEach(star => star.draw())
-    createMountainRange(1, canvas.height - 150, '#384551')
-    createMountainRange(2, canvas.height - 250, '#2B3843')
-    createMountainRange(3, canvas.height - 350, '#26333B')
+    createMountainRange(1, canvas.height - 250, '#384551')
+    createMountainRange(2, canvas.height - 350, '#2B3843')
+    createMountainRange(3, canvas.height - 500, '#26333B')
+    
+    //floor
+    c.fillStyle = '#12181c'
+    c.fillRect(0,canvas.height-groundHeight, canvas.width, canvas.height)
+
     stars.forEach((star, index) => {
         star.update()
         if (star.radius < 1) {
@@ -197,6 +202,13 @@ function animate() {
             sparks.splice(index, 1)
         }
     })
+
+    if (timer % randomIntFromRange(20,30)===0){
+        const spawnRadius = 20
+        const x = Math.max(spawnRadius, canvas.width * Math.random() - spawnRadius)
+        stars.push(new Star(x, -400, randomIntFromRange(5, 8), randomColorAlpha()))
+    }
+    timer++
 }
 
 
